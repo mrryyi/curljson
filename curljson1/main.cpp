@@ -272,6 +272,8 @@ std::string getFileContents (std::string fileName){
 	return content;
 }
 
+// Todo: make datetime format into simple clock format, hh:mm:ss:ms
+
 std::string timeStrFromDatetime(std::string datetime) {
 	return "10:00:00";
 }
