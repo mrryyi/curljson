@@ -219,6 +219,71 @@ bool getStringDataFromURL(std::string* dataToBeReceived, std::string URL) {
 }
 
 
+
+bool getLocation(json* locationjson, std::string locationQ, std::string APIKEY) {
+	std::string content;
+
+	std::string URL = "https://eu1.locationiq.com/v1/search.php?key=" + APIKEY + "&q=" + locationQ + "&limit=2&format=json";
+
+	if (getStringDataFromURL(&content, URL)) {
+		*locationjson = toJson(content);
+
+		// iterator is not at the end, which means that error was found.
+		// an error key means that we did not in fact get location.
+		// Therefore we return the inverse of if we found an error,
+		// such that false is error, and true is no error.
+		return !(locationjson->find("error") != locationjson->end());
+	}
+
+	return false;
+}
+
+bool getWeather(json* weatherjson, std::string lat, std::string lng, std::string APIKEY) {
+	std::string content;
+	std::string URL = "http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lng + "&APPID=" + APIKEY;
+	if (getStringDataFromURL(&content, URL)) {
+		*weatherjson = toJson(content);
+		return true;
+	}
+
+	return false;
+}
+
+bool getNearbyStations(json* nearbytrimmed, std::string lat, std::string lng, int maxNo, int radius, std::string APIKEY) {
+	std::string content;
+
+	std::string URL = "api.sl.se/api2/nearbystopsv2.json?key=" + APIKEY + "&originCoordLat=" + lat + "&originCoordLong=" + lng + "&maxNo=" + std::to_string(maxNo) + "&r" + std::to_string(radius);
+
+	if (getStringDataFromURL(&content, URL)) {
+
+		json nearbyjson;
+		nearbyjson = toJson(content);
+
+		
+
+		std::cout << nearbyjson.dump(4);
+
+		auto responseDataPtr = nearbyjson.find("stopLocationOrCoordLocation");
+		if (responseDataPtr != nearbyjson.end()){
+			for (json::iterator it = nearbyjson["stopLocationOrCoordLocation"].begin(); it != nearbyjson["stopLocationOrCoordLocation"].end(); ++it) {
+				auto obj = it.value().find("StopLocation");
+				if (obj != it.value().end()) {
+					nearbytrimmed->push_back(it.value());
+				}
+			}
+
+			return true;
+		}
+		else {
+			return false;
+		}
+		//json::iterator nearbyStations;
+	}
+
+	return false;
+}
+
+
 bool getDepartures(json* SLjson, int siteID, int timeWindow, std::string APIKEY) {
 
 	if (timeWindow < 0 || timeWindow > 60) {
@@ -278,23 +343,114 @@ std::string timeStrFromDatetime(std::string datetime) {
 	return "10:00:00";
 }
 
+char getInputChar(char* viableChars, int size) {
+	char input;
+	bool legit = false;
+	do {
+		input = std::cin.get();
+		for (int i = 0; i < size; i++) {
+			if (viableChars[i] == input) {
+				legit = true;
+			}
+		}
+	} while (legit == false);
+
+	return input;
+}
+
+void printTrimmedStations(json* stations) {
+	for (auto& station : json::iterator_wrapper(*stations)) {
+		
+		std::cout << "Hållplats: ";
+		std::cout << station.value()["Name"].get<std::string>();
+		std::cout << ", avstånd: ";
+		std::cout << station.value()["Dist"].get<std::string>();
+		std::cout << "m";
+		std::cout << std::endl;
+	}
+}
+
 int wmain(int argc, wchar_t *argv[]) {
 
-	std::string content;
-
-	json timejson;
-	json APIKEYS = toJson(getFileContents("APIKEYS.txt"));
-	json SLjson;
 	curl_global_init(CURL_GLOBAL_ALL);
 
-	bool gotDepartures = false;
-	bool gotTime = false;
+	json APIKEYS = toJson(getFileContents("APIKEYS.txt"));
+
+	json timejson;
+	json SLjson;
+	json locationjson;
+	json weatherjson;
+	json nearbyjson;
+	json nearbytrimmed;
+
+	bool gotDepartures			= false;
+	bool gotTime				= false;
+	bool gotLocation			= false;
+	bool gotWeather				= false;
+	bool gotNearbyStations		= false;
+	bool gotSiteID				= false;
 
 	int siteID = 9192;
 	int timeWindowMinutes = 60;
+	int nearbyStationMax = 9;		// 9 stations
+	int nearbyStationRadius = 2000;	// 2000 meter radius
 
+	std::string locationQ;
+	std::string lat;
+	std::string lon;
+
+	std::cout << "Enter an address you'd like to stuff for: ";
+	std::cin >> locationQ;
+
+	gotLocation = getLocation(&locationjson, locationQ, APIKEYS["locationiq"].get<std::string>());
+
+	/*
+
+	Flow:
+		User enters address or place near you.
+		json narliggande = Närliggande hållplatser API anrop
+		Sedan får användaren välja vilken närliggande hållplats som är "Best match"
+		siteID = platsuppslag av best match.
+		Alternativt, om vi hittat en hållplats med potentiellt tunnelbana, visa den som ett "extra bra" alternativ.
+
+*/
+
+
+	if (gotLocation) {
+
+		auto it = locationjson.begin();
+		lat = it.value()["lat"].get<std::string>();
+		lon = it.value()["lon"].get<std::string>();
+
+		std::cout << lat << " " << lon << std::endl;
+		gotWeather = getWeather(&weatherjson, lat, lon, APIKEYS["openweather"].get<std::string>());
+
+		if (gotWeather) {
+			std::cout << "temperature: ";
+			std::cout << weatherjson["main"]["temp"].get<float>();
+			std::cout << " K" << std::endl;
+		}
+
+		gotNearbyStations = getNearbyStations(&nearbytrimmed, lat, lon, nearbyStationMax, nearbyStationRadius, APIKEYS["nearby"]);
+	}
+
+	std::cout << std::endl << std::endl;
+	
+	if (gotNearbyStations) {
+		std::cout << nearbytrimmed.dump(4);
+		for (json::iterator station = nearbytrimmed.begin(); station != nearbytrimmed.end(); ++station) {
+			std::cout << "Station ";
+			std::cout << station.value()["StopLocation"]["name"].get<std::string>();
+			std::cout << std::endl;
+		}
+	}
+
+
+
+
+
+	/*
 	gotDepartures = getDepartures(&SLjson, siteID, timeWindowMinutes, APIKEYS["realtimedepartures"].get<std::string>());
-
 
 	if ( gotDepartures ) {
 
@@ -319,9 +475,7 @@ int wmain(int argc, wchar_t *argv[]) {
 	if ( gotTime ) {
 		std::cout << timejson["datetime"].get<std::string>();
 	}
-
-	
-
+	*/
 	curl_global_cleanup();
 
 	std::cin.get();
