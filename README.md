@@ -13,12 +13,12 @@ You will need a text file called "APIKEYS.txt" formatted as such:
 "nearby":"<yourkey>",
 "mockapi":"<yourkey>"}
   
-locationiq: https://locationiq.com/docs#forward-geocoding
-openweather: https://openweathermap.org/api
-realtimedepartures: https://www.trafiklab.se/api/sl-realtidsinformation-4
-platsuppslag: https://www.trafiklab.se/api/sl-platsuppslag
-nearby: https://www.trafiklab.se/api/sl-narliggande-hallplatser-2
-mockapi: https://www.mockapi.io/
+locationiq: https://locationiq.com/docs#forward-geocoding<br>
+openweather: https://openweathermap.org/api<br>
+realtimedepartures: https://www.trafiklab.se/api/sl-realtidsinformation-4<br>
+platsuppslag: https://www.trafiklab.se/api/sl-platsuppslag<br>
+nearby: https://www.trafiklab.se/api/sl-narliggande-hallplatser-2<br>
+mockapi: https://www.mockapi.io/<br>
 
 You can still run the program, but it's not going to be able to get information from the API's you don't have a key for.
 
