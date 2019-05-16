@@ -9,10 +9,15 @@ With the additions of modifying my microsoft visual studio community installatio
 I also included these following libraries in the Linker/Input/Additional dependencies.
 
 libcurl.lib
+
 Normaliz.lib
+
 Ws2_32.lib
+
 Wldap32.lib
+
 Crypt32.lib
+
 advapi32.lib
 
 To develop with nlohmann's json library, as is used extensively in the project, include a filepath to the include library in your project's C/C++/General/Additional libraries. For example:
