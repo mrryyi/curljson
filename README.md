@@ -6,12 +6,14 @@ I won't tell you how to do that, because the functionality is so dumb. The progr
 
 You will need a text file called "APIKEYS.txt" formatted as such:
 
-{"locationiq":"\<yourkey\>",
-"openweather":"\<yourkey\>",
-"realtimedepartures":"\<yourkey\>",
-"platsuppslag":"\<yourkey\>",
-"nearby":"\<yourkey\>",
-"mockapi":"\<yourkey\>"}
+{<br>
+  "locationiq":"\<yourkey\>",<br>
+  "openweather":"\<yourkey\>",<br>
+  "realtimedepartures":"\<yourkey\>",<br>
+  "platsuppslag":"\<yourkey\>",<br>
+  "nearby":"\<yourkey\>",<br>
+  "mockapi":"\<yourkey\>"<br>
+}
   
 locationiq: https://locationiq.com/docs#forward-geocoding<br>
 openweather: https://openweathermap.org/api<br>
@@ -29,14 +31,15 @@ Developing the main.cpp further requires knowledge of how to install libcurl for
 
 With the additions of modifying my microsoft visual studio community installation to have "Visual C++ MFC for x86 and x64" checked under "Individual components" in the Visual Studio Installer.
 
-I also included these following libraries in the Linker/Input/Additional dependencies.
 
-libcurl.lib
-Normaliz.lib
-Ws2_32.lib
-Wldap32.lib
-Crypt32.lib
-advapi32.lib
+For the project, I included these following libraries in the Linker/Input/Additional dependencies.
+
+libcurl.lib<br>
+Normaliz.lib<br>
+Ws2_32.lib<br>
+Wldap32.lib<br>
+Crypt32.lib<br>
+advapi32.lib<br>
 
 To develop with nlohmann's json library, as is used extensively in the project, include a filepath to the include library in your project's C/C++/General/Additional libraries. For example:
   C:\json-develop\include
