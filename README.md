@@ -27,6 +27,6 @@ To develop with nlohmann's json library, as is used extensively in the project, 
 Notes:
   When the code says .value() it means getting the json "value" from the json iterator.<br>
   For example, auto example = inkopslists["products"].begin() is an iterator.<br>
-  example.get<std::string>() does not work, because it's not json.<br>
+  example.get\<std::string\>() does not work, because it's not json.<br>
   example.value() returns the json value at the iterator, as a json formatted value, like '"apple"', 7 characters.<br>
-  example.value().get<std::string>() returns the string value at the iterator, like 'apple', 5 characters.<br>
+  example.value().get\<std::string\>() returns the string value at the iterator, like 'apple', 5 characters.<br>
