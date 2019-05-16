@@ -101,6 +101,17 @@ bool departureStatusCodeExplanation(int statusCode) {
 	return cont;
 }
 
+/*
+	Location
+	
+	Represents a place with a name and coordinates.
+	
+	Used to find nearby station names, and weather.
+	
+	The name is there to connect coordinates with something intelligible to the human.
+
+*/
+
 class Location {
 public:
 	Location(std::string name, std::string lat, std::string lon) :
