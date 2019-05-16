@@ -6,12 +6,12 @@ I won't tell you how to do that, because the functionality is so dumb. The progr
 
 You will need a text file called "APIKEYS.txt" formatted as such:
 
-{"locationiq":"<yourkey>",
-"openweather":"<yourkey>",
-"realtimedepartures":"<yourkey>",
-"platsuppslag":"<yourkey>",
-"nearby":"<yourkey>",
-"mockapi":"<yourkey>"}
+{"locationiq":"\<yourkey\>",
+"openweather":"\<yourkey\>",
+"realtimedepartures":"\<yourkey\>",
+"platsuppslag":"\<yourkey\>",
+"nearby":"\<yourkey\>",
+"mockapi":"\<yourkey\>"}
   
 locationiq: https://locationiq.com/docs#forward-geocoding<br>
 openweather: https://openweathermap.org/api<br>
